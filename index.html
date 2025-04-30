@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>Calculator API</h2>
+        <form id="calculatorForm">
+            <div class="form-group">
+                <label for="num1">First Number:</label>
+                <input type="number" id="num1" name="num1" required step="any">
+            </div>
+            <div class="form-group">
+                <label for="operator">Operator:</label>
+                <select id="operator" name="operator" required>
+                    <option value="add">Add (+)</option>
+                    <option value="subtract">Subtract (-)</option>
+                    <option value="multiply">Multiply (×)</option>
+                    <option value="divide">Divide (÷)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="num2">Second Number:</label>
+                <input type="number" id="num2" name="num2" required step="any">
+            </div>
+            <button type="submit">Calculate</button>
+        </form>
+        <div id="result" class="result" style="display: none;"></div>
+    </div>
+
+    <script>
+        document.getElementById('calculatorForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const num1 = document.getElementById('num1').value;
+            const num2 = document.getElementById('num2').value;
+            const operator = document.getElementById('operator').value;
+            const resultDiv = document.getElementById('result');
+
+            try {
+                const response = await fetch(`http://localhost:3000?num1=${num1}&num2=${num2}&operator=${operator}`);
+                const data = await response.json();
+
+                resultDiv.style.display = 'block';
+                if (data.status === 'success') {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `Result: ${data.result}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `Error: ${data.message}`;
+                }
+            } catch (error) {
+                resultDiv.style.display = 'block';
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `Error: Could not connect to the server`;
+            }
+        });
+    </script>
+</body>
+</html>
